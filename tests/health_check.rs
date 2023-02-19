@@ -1,5 +1,8 @@
 use std::net::TcpListener;
 
+//Local Crates
+use newsletter::startup::run;
+
 /*##########################################################################################################
 #*[Tokio::test] -> equivalent a [tokio::main]. Une macro accessible avec expand
 #*Commande : "cargo +nightly expand --test health_check" (health_check == name of file)
@@ -44,7 +47,7 @@ fn spawn_app()-> String {
     //Fetch le PORT attribuer par le systeme
     let port = listener.local_addr().unwrap().port();
 
-    let server = newsletter::run(listener).expect("Failed to bind address");
+    let server = run(listener).expect("Failed to bind address");
     let _ = tokio::spawn(server);
 
     format!("http://127.0.0.1:{}", port)

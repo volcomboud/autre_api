@@ -24,6 +24,18 @@ actix-web = "4.3.0"
 tokio = { version = "1.25.0", features = ["macros", "rt-multi-thread"] }
 serde = {version = "1.0.152", features = ["derive"]}
 
+#Using table-like toml syntax to avoid a super-long line !
+[dependencies.sqlx]
+version = "0.6"
+default-features = false
+features = [
+    "runtime-tokio-rustls",
+    "macros",
+    "postgres",
+    "uuid",
+    "chrono",
+    "migrate"
+]
 #Dev dependencies est utiliser seulement pour les tests
 #Ces dependances ne sont pas inclus dans binary final de l'app
 [dev-dependencies]

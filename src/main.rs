@@ -3,8 +3,8 @@
 #*       src/lib.rs
 #*donc la prochain ligne est son import
 ##########################################################################################################*/
-use newsletter::run;
 use std::net::{TcpListener};
+use newsletter::startup::run;
 
 /*##########################################################################################################
 #*Tokio::main est un MACRO. Permet de rendre ma fonction main asynchrone (car techniquement elle ne pourrait pas l'etre)
