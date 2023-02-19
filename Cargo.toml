@@ -1,0 +1,31 @@
+[package]
+name    = "newsletter"
+authors = ["boud"]
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+#La convention veut qu'on utilise ce path mais ca pourrait etre n'importe quoi
+#On pourrait ajouter un argument comme `name` mais par default cargo va utiliser
+#`package.name` && c'est ca que nous voulons
+path ="src/lib.rs"
+
+#Je peux avoir qu'une seule lib mais je peux avoir plusieurs binaries
+#Ici les bracket montre que c'est un array
+#Permet de gerer plusieurs lib dans un repository
+[[bin]]
+path = "src/main.rs"
+name = "newsletter"
+
+[dependencies]
+actix-web = "4.3.0"
+tokio = { version = "1.25.0", features = ["macros", "rt-multi-thread"] }
+serde = {version = "1.0.152", features = ["derive"]}
+
+#Dev dependencies est utiliser seulement pour les tests
+#Ces dependances ne sont pas inclus dans binary final de l'app
+[dev-dependencies]
+reqwest = "0.11.14"
+
