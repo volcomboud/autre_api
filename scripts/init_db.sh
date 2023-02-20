@@ -3,7 +3,6 @@
 # sudo docker rm $(sudo docker ps -a -q)   -> Rm container
 # sudo docker ps -a                        -> Show all container
 #
-#
 set -x
 set -eo pipefail
 
@@ -33,6 +32,10 @@ DB_NAME="${POSTGRES_DB:=newsletter}"
 #Check if a custom port has been set, otherwise default to '5432'
 DB_PORT="${POSTGRES_PORT:=5432}"
 
+# Allow to skip Docker if a dockerized Postgres database is already running
+#ToSkip -> SKIP_DOCKER=true ./scripts/init_db.sh
+if [[ -z "${SKIP_DOCKER}" ]]
+then
 #Launch my Postgress using Docker
 docker run \
   -e POSTGRES_USER=${DB_USER} \
@@ -42,6 +45,7 @@ docker run \
   -d postgres \
   postgres -N 1000
   # ^ Increased max number of connection for testing purposes
+fi
 
 #Keep pinging Postgres until it's ready to accept commands
 export PGPASSWORD="${DB_PASSWORD}"
@@ -51,8 +55,8 @@ do
   sleep 1
 done
 
-DB_URL=postgres://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/${DB_NAME}
-export DB_URL
+DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/${DB_NAME}
+export DATABASE_URL
 
 ##################################################################
 #Les commandes SQLX ne fonctionne pas donc faire le reste a la main avec ce suffixe :
@@ -61,7 +65,9 @@ export DB_URL
 #
 #Une fois le script rouler entrer la prochaine commande a la main:
 #sudo sqlx migrate add create_subscriptions_table
-
+#sqlx migrate run
+#
 #Une fois le modele produit dans le migration file
 #sqlx database create --database-url postgres://postgres:postgres@127.0.0.1:5432/newsletter
 #sqlx migrate run --database-url postgres://postgres:postgres@127.0.0.1:5432/newsletter
+

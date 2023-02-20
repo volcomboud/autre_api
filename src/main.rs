@@ -1,9 +1,10 @@
 /*##########################################################################################################
 #* RUN : cet function existe dans :
 #*       src/lib.rs
-#*donc la prochain ligne est son import
+#*     donc on import
 ##########################################################################################################*/
 use std::net::{TcpListener};
+use newsletter::configuration::get_configuration;
 use newsletter::startup::run;
 
 /*##########################################################################################################
@@ -14,12 +15,9 @@ use newsletter::startup::run;
  ##########################################################################################################*/
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    run(get_port())?.await
+    let configuration = get_configuration().expect("Failed to read configuration");
+
+    let address = format!("127.0.0.1:{}", configuration.application_port);
+    let listener = TcpListener::bind(address)?;
+    run(listener)?.await
 }
-
-fn get_port()-> TcpListener {
-    TcpListener::bind("127.0.0.1:0")
-        .expect("Failed to bind random port")
-}
-
-

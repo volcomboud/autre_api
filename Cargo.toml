@@ -23,6 +23,7 @@ name = "newsletter"
 actix-web = "4.3.0"
 tokio = { version = "1.25.0", features = ["macros", "rt-multi-thread"] }
 serde = {version = "1.0.152", features = ["derive"]}
+config = "0.13.3"
 
 #Using table-like toml syntax to avoid a super-long line !
 [dependencies.sqlx]

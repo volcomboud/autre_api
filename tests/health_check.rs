@@ -1,7 +1,9 @@
 use std::net::TcpListener;
+use sqlx::{Connection, PgConnection};
 
 //Local Crates
 use newsletter::startup::run;
+use newsletter::configuration::get_configuration;
 
 /*##########################################################################################################
 #*[Tokio::test] -> equivalent a [tokio::main]. Une macro accessible avec expand
@@ -65,11 +67,19 @@ fn spawn_app()-> String {
 
 #[tokio::test]
 async fn subscribe_return_200_for_valid_form_data() {
-    //arrangement
+    //arrangement-----------------------------------------------------------------
     let app_address = spawn_app();
+    //dealing with database config
+    let configuration = get_configuration().expect("Failed to read configuration file");
+    let connection_string = configuration.database.connection_string();
+    let mut connection = PgConnection::connect(&connection_string)
+        .await
+        .expect("Failed to connect to Postgres");
+    //end db config
+
     let client = reqwest::Client::new();
 
-    //L'action
+    //L'action--------------------------------------------------------------------
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
     let response = client
         .post(&format!("{}/subscriptions", &app_address))
@@ -79,8 +89,16 @@ async fn subscribe_return_200_for_valid_form_data() {
         .await
         .expect("Failed to execute request.");
 
-    //Assert --
+    //Assert ------------------------------------------------------------------------
     assert_eq!(200, response.status().as_u16());
+
+    let saved = sqlx::query!("SELECT email, name FROM subscriptions",)
+        .fetch_one(&mut connection)
+        .await
+        .expect("Failed to fetch saved subscription");
+
+    assert_eq!(saved.email, "ursula_le_guin@gmail.com");
+    assert_eq!(saved.name, "le guin");
 }
 
 #[tokio::test]
