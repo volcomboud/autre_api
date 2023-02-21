@@ -13,15 +13,15 @@ if ! [ -x "$(command -v psql)" ];
     exit 1
 fi
 
-#if ! [ -x "$(command -V sqlx)" ];
-#  then
-#    echo >&2 "Error sqlx is not installed"
-#    echo >&2 "Use : "
-#    echo >&2 "cargo install --version='~0.6' sqlx-cli \
-#    --no-default-features --features rustls,postgres"
-#    echo >&2 "to install it"
-#    exit 1
-#fi
+if ! [ -x "$(command -V sqlx)" ];
+  then
+    echo >&2 "Error sqlx is not installed"
+    echo >&2 "Use : "
+    echo >&2 "cargo install --version='~0.6' sqlx-cli \
+    --no-default-features --features rustls,postgres"
+    echo >&2 "to install it"
+    exit 1
+fi
 
 #Check if a custom user has been set, otherwise default to 'postgres'
 DB_USER=${POSTGRES_USER:=postgres}
@@ -55,16 +55,22 @@ do
   sleep 1
 done
 
+>&2 echo "Postgres is up and running on port ${DB_PORT} - running migrations now!"
+
 DATABASE_URL=postgres://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/${DB_NAME}
 export DATABASE_URL
 
+sqlx database create
+sqlx migrate run
+
+>&2 echo "Postgres has been migrated, ready to go!"
 ##################################################################
-#Les commandes SQLX ne fonctionne pas donc faire le reste a la main avec ce suffixe :
+#Les commandes SQLX ne fonctionne pas EN LOCAL(LINUX) donc faire le reste a la main avec ce suffixe :
 #
 # --database-url <postgres://postgres:postgres@127.0.0.1:5432/newsletter>
 #
 #Une fois le script rouler entrer la prochaine commande a la main:
-#sudo sqlx migrate add create_subscriptions_table
+#sqlx migrate add create_subscriptions_table
 #sqlx migrate run
 #
 #Une fois le modele produit dans le migration file
