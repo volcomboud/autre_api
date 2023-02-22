@@ -14,7 +14,7 @@ jobs:
         image: postgres:12
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
+          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: postgres
         ports:
           - 5432:5432
@@ -72,7 +72,7 @@ jobs:
           SKIP_DOCKER=true ./scripts/init_db.sh
       - name: Check sqlx-data.json is up-to-date
         run: |
-          cargo sqlx prepare -- --bin zero2prod
+          cargo sqlx prepare -- --bin newsletter
       - name: Run cargo test
         uses: actions-rs/cargo@v1
         with:
