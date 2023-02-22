@@ -1,11 +1,11 @@
-use actix_web::{web, App, HttpServer};
 use actix_web::dev::Server;
+use actix_web::{web, App, HttpServer};
 use std::net::{IpAddr, TcpListener};
 
 // Crate local
 use crate::routes::greet;
-use crate::routes::subscribe;
 use crate::routes::health_check;
+use crate::routes::subscribe;
 /*##########################################################################################################
 #*web::get() est equivalent a Route::new().guard(guard::Get)))
 #*Ceci veut dire qu c'est un guard qui ne laissera passer au handler SEULEMENT les
@@ -19,22 +19,25 @@ use crate::routes::health_check;
 pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
     let port = listener.local_addr().unwrap().port();
     let ip = listener.local_addr().unwrap().ip();
-    log_server(ip,port);
+    log_server(ip, port);
 
     let server = HttpServer::new(|| {
         App::new()
-            .route("/health_check",web::get().to(health_check))
+            .route("/health_check", web::get().to(health_check))
             .route("/subscriptions", web::post().to(subscribe))
-            .route("/hello",web::get().to(greet))
-            .route("/hello/{name}",web::get().to(greet))
+            .route("/hello", web::get().to(greet))
+            .route("/hello/{name}", web::get().to(greet))
     })
-        .listen(listener)?
-        .run();
+    .listen(listener)?
+    .run();
 
     Ok(server)
 }
-fn log_server(ip: IpAddr, port: u16){
-    print!("##################################\n\
+fn log_server(ip: IpAddr, port: u16) {
+    print!(
+        "##################################\n\
     #Addr_iP: {}\n\
-    #Port   : {}\n##################################\n\n",ip, port);
+    #Port   : {}\n##################################\n\n",
+        ip, port
+    );
 }

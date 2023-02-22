@@ -1,9 +1,9 @@
-use std::net::TcpListener;
 use sqlx::{Connection, PgConnection};
+use std::net::TcpListener;
 
 //Local Crates
-use newsletter::startup::run;
 use newsletter::configuration::get_configuration;
+use newsletter::startup::run;
 
 /*##########################################################################################################
 #*[Tokio::test] -> equivalent a [tokio::main]. Une macro accessible avec expand
@@ -16,7 +16,7 @@ use newsletter::configuration::get_configuration;
 ##########################################################################################################*/
 
 #[tokio::test]
-async fn health_check_works(){
+async fn health_check_works() {
     //arrangement
     let address = spawn_app();
     //Utiliser reqwest pour envoyer les requete Http a l'app
@@ -42,9 +42,8 @@ async fn health_check_works(){
 #*runs.
 #* [PORT]->127.0.0.1:0     Le 0 indique que le port sera scan && attribuer par le OS
 ##########################################################################################################*/
-fn spawn_app()-> String {
-    let listener = TcpListener::bind("127.0.0.1:0")
-        .expect("Failed to bind random port");
+fn spawn_app() -> String {
+    let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
 
     //Fetch le PORT attribuer par le systeme
     let port = listener.local_addr().unwrap().port();
@@ -104,15 +103,15 @@ async fn subscribe_return_200_for_valid_form_data() {
 #[tokio::test]
 async fn subscribe_return_400_when_data_is_missing() {
     //arrangement
-   let app_address = spawn_app();
+    let app_address = spawn_app();
     let client = reqwest::Client::new();
     let test_case = vec![
         ("name=le%20guin", "missing the email"),
         ("email=ursula_le_guin%40gmail.com", "missing the name"),
-        ("", "missing the email and the name")
+        ("", "missing the email and the name"),
     ];
 
-    for(invalid_body, error_message) in test_case {
+    for (invalid_body, error_message) in test_case {
         //L'action
         let response = client
             .post(format!("{}/subscriptions", &app_address))
@@ -128,7 +127,8 @@ async fn subscribe_return_400_when_data_is_missing() {
             response.status().as_u16(),
             //Msg d'erreur custom pour donner plus d'info sur le test; Comme je passe un test parametrer invalide, je veux savoir
             //quel portion du Vector est en failure
-            "The APi did not fail with code:400 BadRequest when the payload was {}.", error_message
+            "The APi did not fail with code:400 BadRequest when the payload was {}.",
+            error_message
         );
     }
 }
